@@ -79,34 +79,68 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get(self, request):
-        user_id = str(request.user.id)
-        user = users.find_one({"_id": ObjectId(user_id)})
+        try:
+            print(request.user.id,'iiii')
+            user_id = str(request.user.id)   
+
+            user = users.find_one({"_id": ObjectId(user_id)})
+        except Exception as e:
+            
+            return Response({"error": "Invalid user ID or database error", "details": str(e)}, status=400)
 
         if user:
-            user["_id"] = str(user["_id"])
-            user.pop("password", None)
-            return Response(user)
+            user["_id"] = str(user["_id"])  
+            user.pop("password", None)     
 
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+            for field in ["created_at", "updated_at"]:
+                if field in user and isinstance(user[field], datetime):
+                    user[field] = user[field].isoformat()
+
+            return Response(user)
+        else:
+            return Response({"error": "User not found"}, status=404)
+
+
+
 
     def put(self, request):
-        user_id = str(request.user.id)
-        user = users.find_one({"_id": ObjectId(user_id)})
+        try:
+            user_id = str(request.user.id)
+            user = users.find_one({"_id": ObjectId(user_id)})
+        except Exception:
+            return Response({"error": "Invalid user ID"}, status=400)
 
-        if user:
-            update_data = {
-                "name": request.data.get("name", user["name"]),
-                "email": request.data.get("email", user["email"]),
-            }
-            users.update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
-            return Response({"message": "User updated successfully"})
+        if not user:
+            return Response({"error": "User not found"}, status=404)
 
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        update_data = {
+            "username": request.data.get("username", user.get("username")),
+            "email": request.data.get("email", user.get("email")),
+            "first_name": request.data.get("first_name", user.get("first_name")),
+            "last_name": request.data.get("last_name", user.get("last_name")),
+            "updated_at": datetime.utcnow(),
+        }
+
+        # Optional: Validate email/username here before update if needed
+
+        users.update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
+
+        return Response({"message": "User updated successfully"})
+
+
+
+
+
+
+
 
 
 
