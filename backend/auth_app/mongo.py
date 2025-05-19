@@ -1,6 +1,4 @@
 
-
-
 from pymongo import MongoClient
 import hashlib
 
