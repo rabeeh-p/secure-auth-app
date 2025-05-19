@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
 class RegisterSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100)
+    username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
-    password = serializers.CharField(min_length=6)
+    password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
 
     def validate_email(self, value):
         from .mongo import users   
@@ -13,7 +15,7 @@ class RegisterSerializer(serializers.Serializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    identifier = serializers.CharField()
     password = serializers.CharField()
 
 
