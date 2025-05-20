@@ -105,6 +105,8 @@ class UserDetailView(APIView):
             user_info = {
                 "first_name": user.get("first_name", ""),
                 "last_name": user.get("last_name", ""),
+                "email": user.get("email", ""),
+                "username": user.get("username", ""),
                 "created_at": created_at
             }
 
@@ -149,5 +151,18 @@ class UserDetailView(APIView):
 
 
 
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
 
+    def post(self, request):
+        try:
+            print('lgout is working')
+            # The frontend should send the refresh token here
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # blacklist the refresh token
+
+            return Response({"detail": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

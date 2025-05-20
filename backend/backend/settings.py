@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'auth_app',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 REST_FRAMEWORK = {
@@ -70,6 +71,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),      
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),          
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
