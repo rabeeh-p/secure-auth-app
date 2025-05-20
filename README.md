@@ -43,12 +43,21 @@ It includes:
 
 ## Installation & Setup
 
-git clone <your-repo-url>
-cd <your-repo-folder>/backend
-python3 -m venv venv
-source venv/bin/activate  # For Windows PowerShell use: .\venv\Scripts\activate
-pip install -r requirements.txt
-echo "SECRET_KEY=your_django_secret_key_here" > .env
-echo "MONGODB_URI=your_mongodb_connection_string_here" >> .env
-python manage.py migrate  # Optional if you have Django models
-python manage.py runserver
+1. git clone <your-repo-url>
+
+2. cd <your-repo-folder>/backend
+
+3. python3 -m venv venv
+
+4. source venv/bin/activate     # For Windows PowerShell use: .\venv\Scripts\activate
+
+5. pip install -r requirements.txt
+
+6. Create a file named '.env' in the backend folder and add the following lines:
+   SECRET_KEY=your_django_secret_key_here
+   MONGODB_URI=your_mongodb_connection_string_here
+
+7. python manage.py migrate     # Optional if you have Django models
+
+8. python manage.py runserver
+
