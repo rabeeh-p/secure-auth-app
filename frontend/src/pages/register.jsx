@@ -20,11 +20,15 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/register/', form); // replace with your API URL
+      const res = await axios.post('http://127.0.0.1:8000/register/', form,{
+        headers: {
+    'Content-Type': 'application/json',
+  },
+      });  
       alert(res.data.message);
       navigate('/login');
     } catch (err) {
-      console.error(err);
+      console.error('err',err);
       alert('Registration failed: ' + (err.response?.data?.error || 'Unknown error'));
     }
   };
