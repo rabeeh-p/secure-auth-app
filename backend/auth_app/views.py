@@ -21,6 +21,7 @@ from .authentication import MongoJWTAuthentication
 # SIGNUP VIEW
 class RegisterView(APIView):
     def post(self, request):
+        print('working')
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data

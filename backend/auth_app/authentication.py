@@ -3,7 +3,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 import jwt
 from bson import ObjectId
-from .mongo import users  # Adjust this
+from .mongo import users  
 from datetime import datetime
 
 class MongoUser:
