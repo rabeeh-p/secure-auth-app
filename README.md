@@ -43,55 +43,12 @@ It includes:
 
 ## Installation & Setup
 
-### Backend Setup
-
-1. **Clone the repository** (if not done already):
-   ```bash
-   git clone <your-repo-url>
-   cd <your-repo-folder>/backend
-Create and activate a Python virtual environment:
-
-On Linux/macOS:
-
-bash
-Copy
-Edit
+git clone <your-repo-url>
+cd <your-repo-folder>/backend
 python3 -m venv venv
-source venv/bin/activate
-On Windows (PowerShell):
-
-powershell
-Copy
-Edit
-python -m venv venv
-.\venv\Scripts\activate
-Install Python dependencies:
-
-bash
-Copy
-Edit
+source venv/bin/activate  # For Windows PowerShell use: .\venv\Scripts\activate
 pip install -r requirements.txt
-Set environment variables:
-
-Create a .env file in the backend directory with the following content:
-
-ini
-Copy
-Edit
-SECRET_KEY=your_django_secret_key_here
-MONGODB_URI=your_mongodb_connection_string_here
-Run Django migrations (if applicable):
-
-Since you are using MongoDB with pymongo directly, migrations may not be required unless you have other Django models.
-
-bash
-Copy
-Edit
-python manage.py migrate
-Run the backend server:
-
-bash
-Copy
-Edit
+echo "SECRET_KEY=your_django_secret_key_here" > .env
+echo "MONGODB_URI=your_mongodb_connection_string_here" >> .env
+python manage.py migrate  # Optional if you have Django models
 python manage.py runserver
-Backend will be accessible at http://127.0.0.1:8000
