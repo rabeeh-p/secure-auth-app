@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // or your `api` instance
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../Redux/authSlce';  
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [form, setForm] = useState({
-    username: '',
+    identifier: '',
     password: '',
   });
 
@@ -17,9 +20,23 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/login/', form); // replace with your API endpoint
-      alert(res.data.message || 'Login successful');
-      navigate('/dashboard'); // replace with your destination route
+      const res = await axios.post('http://127.0.0.1:8000/login/', form);
+
+      const { access, refresh } = res.data;
+      const  username = res.data.user.username
+      console.log(res.data);
+      
+
+      dispatch(setCredentials({ access, refresh, username }));
+
+      localStorage.setItem('access', access);
+      localStorage.setItem('refresh', refresh);
+    localStorage.setItem('username', username);
+
+
+
+      alert('Login successful');
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       alert('Login failed: ' + (err.response?.data?.error || 'Unknown error'));
@@ -27,16 +44,16 @@ function Login() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100 ">
+    <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="col-md-6 p-5 bg-white rounded shadow">
         <h2 className="text-center mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <input
               type="text"
-              name="username"
-              placeholder="Username"
-              value={form.username}
+              name="identifier"
+              placeholder="Username or Email"
+              value={form.identifier}
               onChange={handleChange}
               required
               className="form-control"

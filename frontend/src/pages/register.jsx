@@ -34,7 +34,7 @@ function Register() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div className="container d-flex justify-content-center align-items-center vh-100 ">
       <div className="col-md-6 p-5 bg-white rounded shadow">
         <h2 className="text-center mb-4">Register</h2>
         <form onSubmit={handleSubmit}>
