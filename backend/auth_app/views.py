@@ -14,7 +14,7 @@ import hashlib
 from datetime import datetime
 from .authentication import MongoJWTAuthentication
 
-
+import re
 
 
 
@@ -81,12 +81,11 @@ class LoginView(APIView):
 
 
 
-
+# PROFILE SECTION 
 class UserDetailView(APIView):
     authentication_classes = [MongoJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-   
 
     def get(self, request):
         try:
@@ -117,19 +116,35 @@ class UserDetailView(APIView):
 
 
 
-
-
     def put(self, request):
         try:
             user_id = str(request.user.id)
             data = request.data
             update_data = {}
 
+            name_pattern = re.compile(r'^[A-Za-z\s]{1,30}$')
+
             if 'first_name' in data:
-                update_data['first_name'] = data['first_name']
+                first_name = data['first_name'].strip()
+                if first_name and not name_pattern.match(first_name):
+                    return Response(
+                        {"error": "Invalid first name. Only letters and spaces allowed, max length 30."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                update_data['first_name'] = first_name
+
             if 'last_name' in data:
-                update_data['last_name'] = data['last_name']
-            
+                last_name = data['last_name'].strip()
+                if last_name and not name_pattern.match(last_name):
+                    return Response(
+                        {"error": "Invalid last name. Only letters and spaces allowed, max length 30."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                update_data['last_name'] = last_name
+
+            if not update_data:
+                return Response({"message": "No valid data provided to update."}, status=status.HTTP_400_BAD_REQUEST)
+
             update_data['updated_at'] = datetime.utcnow()
 
             result = users.update_one(
@@ -148,21 +163,4 @@ class UserDetailView(APIView):
 
 
 
-
-
-
-class LogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request):
-        try:
-            print('lgout is working')
-            # The frontend should send the refresh token here
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()  # blacklist the refresh token
-
-            return Response({"detail": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

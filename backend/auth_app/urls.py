@@ -1,8 +1,12 @@
 
-
-
+from rest_framework_simplejwt.views import TokenRefreshView
 from django.urls import path
 from .views import *
+
+
+
+
+
 urlpatterns = [
 
     #SIGNUP API
@@ -10,11 +14,10 @@ urlpatterns = [
     
     #LOGIN API
     path('login/', LoginView.as_view(), name='login'),
-
-    # path('logout/', views.LogoutView.as_view(), name='logout'),
+    
+    # PROFILE DETAILS AND PUT METHOD
     path('profile/', UserDetailView.as_view(), name='profile'),
-    
-    path('logout/', LogoutView.as_view(), name='logout'),
-    
+
+  
 ]
 
