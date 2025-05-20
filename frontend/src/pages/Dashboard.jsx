@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../components/Navbar'; // Adjust path if needed
+import Navbar from '../components/Navbar'; 
 
 function Dashboard() {
   const user = localStorage.getItem('username') || 'Guest';

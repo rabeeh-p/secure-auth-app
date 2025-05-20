@@ -66,7 +66,6 @@ const EditProfile = () => {
       [e.target.name]: e.target.value,
     }));
 
-    // Clear error on field change
     setErrors((prev) => ({
       ...prev,
       [e.target.name]: '',
@@ -77,7 +76,7 @@ const EditProfile = () => {
     e.preventDefault();
 
     if (!validate()) {
-      return; // stop submission if validation fails
+      return; 
     }
 
     try {
@@ -87,7 +86,6 @@ const EditProfile = () => {
         },
       });
 
-      // SweetAlert success
       Swal.fire({
         icon: 'success',
         title: 'Success',
@@ -99,7 +97,6 @@ const EditProfile = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
 
-      // SweetAlert error
       Swal.fire({
         icon: 'error',
         title: 'Oops...',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import api from '../Axios/axiosInstance'; // ✅ Use your Axios instance
+import api from '../Axios/axiosInstance';  
 
 const Profile = () => {
     const [user, setUser] = useState(null);
