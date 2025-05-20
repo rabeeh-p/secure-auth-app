@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { setCredentials } from '../Redux/authSlce';  
+import { setCredentials } from '../Redux/authSlce';
+import Swal from 'sweetalert2';
 
 function Login() {
   const navigate = useNavigate();
@@ -21,34 +22,62 @@ function Login() {
     e.preventDefault();
     try {
       const res = await axios.post('http://127.0.0.1:8000/login/', form);
-
       const { access, refresh } = res.data;
-      const  username = res.data.user.username
-      console.log(res.data);
-      
+      const username = res.data.user.username;
 
       dispatch(setCredentials({ access, refresh, username }));
 
       localStorage.setItem('access', access);
       localStorage.setItem('refresh', refresh);
-    localStorage.setItem('username', username);
+      localStorage.setItem('username', username);
 
+      // SweetAlert success
+      await Swal.fire({
+        icon: 'success',
+        title: 'Login Successful',
+        text: `Welcome back, ${username}!`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
-
-      alert('Login successful');
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      alert('Login failed: ' + (err.response?.data?.error || 'Unknown error'));
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: err.response?.data?.error || 'Unknown error',
+      });
     }
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="col-md-6 p-5 bg-white rounded shadow">
-        <h2 className="text-center mb-4">Login</h2>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: '1rem',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 400,
+          padding: '2rem',
+          backgroundColor: '#fff',
+          border: '1px solid #ccc',
+          borderRadius: 6,
+        }}
+      >
+        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#000' }}>
+          Login
+        </h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
+          <div style={{ marginBottom: '1rem' }}>
             <input
               type="text"
               name="identifier"
@@ -56,10 +85,17 @@ function Login() {
               value={form.identifier}
               onChange={handleChange}
               required
-              className="form-control"
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                borderRadius: 4,
+                border: '1px solid #ccc',
+                fontSize: '1rem',
+                color: '#000',
+              }}
             />
           </div>
-          <div className="mb-3">
+          <div style={{ marginBottom: '1rem' }}>
             <input
               type="password"
               name="password"
@@ -67,15 +103,37 @@ function Login() {
               value={form.password}
               onChange={handleChange}
               required
-              className="form-control"
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                borderRadius: 4,
+                border: '1px solid #ccc',
+                fontSize: '1rem',
+                color: '#000',
+              }}
             />
           </div>
-          <button type="submit" className="btn btn-success w-100">
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: 4,
+              border: 'none',
+              backgroundColor: '#000',
+              color: '#fff',
+              fontSize: '1rem',
+              cursor: 'pointer',
+            }}
+          >
             Login
           </button>
         </form>
-        <p className="text-center mt-3">
-          Don't have an account? <a href="/register">Register here</a>
+        <p style={{ textAlign: 'center', marginTop: '1rem', color: '#333' }}>
+          Don't have an account?{' '}
+          <a href="/register" style={{ color: '#000', textDecoration: 'underline' }}>
+            Register here
+          </a>
         </p>
       </div>
     </div>
