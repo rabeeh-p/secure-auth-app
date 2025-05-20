@@ -6,29 +6,19 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch user data from backend on component mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // Assuming you have a token stored for authentication
-        // const token = localStorage.getItem('access_token');
-        // if (!token) {
-        //   navigate('/login');
-        //   return;
-        // }
-
-
-
-        
         const res = await axios.get('http://127.0.0.1:8000/profile/', {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${localStorage.getItem('access')}`
           }
         });
         setUser(res.data);
+        console.log(res.data, 'dataprofile');
       } catch (error) {
         console.error('Error fetching profile:', error);
-        // On error (like 401 Unauthorized), redirect to login
+        // Optionally navigate to login on error
         // navigate('/login');
       }
     };
@@ -44,6 +34,9 @@ const Profile = () => {
   if (!user) {
     return <div className="container mt-5 text-center">Loading profile...</div>;
   }
+
+  // Format the created date nicely
+  const createdDate = new Date(user.created_at || user.date_joined || user.createdDate).toLocaleDateString();
 
   return (
     <div className="container mt-5">
@@ -61,13 +54,11 @@ const Profile = () => {
               />
             </div>
             <ul className="list-group mb-3">
-              <li className="list-group-item">
-                <strong>Username:</strong> {user.username}
-              </li>
-              <li className="list-group-item">
-                <strong>Email:</strong> {user.email}
-              </li>
-              {/* Add more fields if needed */}
+              <li className="list-group-item"><strong>First Name:</strong> {user.first_name || '-'}</li>
+              <li className="list-group-item"><strong>Last Name:</strong> {user.last_name || '-'}</li>
+              <li className="list-group-item"><strong>Username:</strong> {user.username || '-'}</li>
+              <li className="list-group-item"><strong>Email:</strong> {user.email || '-'}</li>
+              <li className="list-group-item"><strong>Created Date:</strong> {createdDate || '-'}</li>
             </ul>
             <div className="d-flex justify-content-between">
               <button className="btn btn-primary w-50 me-2">Edit Profile</button>
