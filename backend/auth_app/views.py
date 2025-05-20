@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 import hashlib
 from datetime import datetime
-
+from .authentication import MongoJWTAuthentication
 
 
 
@@ -82,31 +82,36 @@ class LoginView(APIView):
 
 
 class UserDetailView(APIView):
+    authentication_classes = [MongoJWTAuthentication]
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+
+   
 
     def get(self, request):
         try:
-            print(request.user.id,'iiii')
-            user_id = str(request.user.id)   
-
+            user_id = str(request.user.id)
             user = users.find_one({"_id": ObjectId(user_id)})
+
+            if not user:
+                return Response({"error": "User not found"}, status=404)
+
+            created_at = user.get("created_at")
+            if isinstance(created_at, datetime):
+                created_at = created_at.isoformat()
+            else:
+                created_at = ""
+
+            user_info = {
+                "first_name": user.get("first_name", ""),
+                "last_name": user.get("last_name", ""),
+                "created_at": created_at
+            }
+
+            return Response(user_info)
+
         except Exception as e:
-            
             return Response({"error": "Invalid user ID or database error", "details": str(e)}, status=400)
 
-        if user:
-            user["_id"] = str(user["_id"])  
-            user.pop("password", None)     
-
-
-            for field in ["created_at", "updated_at"]:
-                if field in user and isinstance(user[field], datetime):
-                    user[field] = user[field].isoformat()
-
-            return Response(user)
-        else:
-            return Response({"error": "User not found"}, status=404)
 
 
 
@@ -114,29 +119,28 @@ class UserDetailView(APIView):
     def put(self, request):
         try:
             user_id = str(request.user.id)
-            user = users.find_one({"_id": ObjectId(user_id)})
-        except Exception:
-            return Response({"error": "Invalid user ID"}, status=400)
+            data = request.data
+            update_data = {}
 
-        if not user:
-            return Response({"error": "User not found"}, status=404)
+            if 'first_name' in data:
+                update_data['first_name'] = data['first_name']
+            if 'last_name' in data:
+                update_data['last_name'] = data['last_name']
+            
+            update_data['updated_at'] = datetime.utcnow()
 
-        update_data = {
-            "username": request.data.get("username", user.get("username")),
-            "email": request.data.get("email", user.get("email")),
-            "first_name": request.data.get("first_name", user.get("first_name")),
-            "last_name": request.data.get("last_name", user.get("last_name")),
-            "updated_at": datetime.utcnow(),
-        }
+            result = users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": update_data}
+            )
 
-        # Optional: Validate email/username here before update if needed
+            if result.modified_count == 0:
+                return Response({"message": "No changes made or user not found"}, status=200)
 
-        users.update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
+            return Response({"message": "User updated successfully"})
 
-        return Response({"message": "User updated successfully"})
-
-
-
+        except Exception as e:
+            return Response({"error": "Failed to update user", "details": str(e)}, status=400)
 
 
 
